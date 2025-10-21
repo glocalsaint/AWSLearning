@@ -50,6 +50,7 @@ def _decimal_to_native(value: Any) -> Any:
 
 
 def _handle_post(event: Dict[str, Any]) -> Dict[str, Any]:
+    print("HANDLING POST EVENT IN PERSON API: ")
     try:
         body = json.loads(event.get("body") or "{}")
     except json.JSONDecodeError:
@@ -78,6 +79,7 @@ def _handle_post(event: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _handle_get(event: Dict[str, Any]) -> Dict[str, Any]:
+    print("HANDLING GET EVENT IN PERSON API: ")
     path_params = event.get("pathParameters") or {}
     name = path_params.get("name")
     if not name:

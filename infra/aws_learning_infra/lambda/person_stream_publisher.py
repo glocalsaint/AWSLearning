@@ -1,5 +1,6 @@
 import json
 import os
+from decimal import Decimal
 from typing import Any, Dict
 
 import boto3
@@ -16,6 +17,18 @@ def _ddb_item_to_dict(item: Dict[str, Any]) -> Dict[str, Any]:
     return {key: _DESERIALIZER.deserialize(value) for key, value in item.items()}
 
 
+def _decimal_to_native(value: Any) -> Any:
+    if isinstance(value, list):
+        return [_decimal_to_native(v) for v in value]
+    if isinstance(value, dict):
+        return {k: _decimal_to_native(v) for k, v in value.items()}
+    if isinstance(value, Decimal):
+        if value % 1 == 0:
+            return int(value)
+        return float(value)
+    return value
+
+
 def handler(event, context):
     """DynamoDB stream handler pushing inserts to SQS."""
     for record in event.get("Records", []):
@@ -26,9 +39,10 @@ def handler(event, context):
         if not new_image:
             continue
 
-        payload = _ddb_item_to_dict(new_image)
+        payload = _decimal_to_native(_ddb_item_to_dict(new_image))
 
         try:
+            print("Sending message to SQS in PERSON STREAM PUBLISHER: ")
             _SQS_CLIENT.send_message(
                 QueueUrl=_QUEUE_URL,
                 MessageBody=json.dumps(payload),
