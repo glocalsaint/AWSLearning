@@ -23,10 +23,14 @@ def main() -> None:
         env=env,
     )
 
-    connection_arn: Optional[str] = os.getenv("CODESTAR_CONNECTION_ARN")
-    repo_owner: Optional[str] = os.getenv("REPO_OWNER")
-    repo_name: Optional[str] = os.getenv("REPO_NAME")
-    repo_branch: str = os.getenv("REPO_BRANCH", "main")
+    CODESTAR_CONNECTION_ARN = 'arn:aws:codeconnections:us-east-1:716542960961:connection/2259f377-12fe-4b22-bd45-5fe62f6eba45'
+    REPO_OWNER = 'glocalsaint'
+    REPO_NAME = 'AWSLearning'
+    REPO_BRANCH = 'master'
+    connection_arn: Optional[str] = CODESTAR_CONNECTION_ARN # os.getenv("CODESTAR_CONNECTION_ARN")
+    repo_owner: Optional[str] = REPO_OWNER # os.getenv("REPO_OWNER")
+    repo_name: Optional[str] = REPO_NAME # os.getenv("REPO_NAME")
+    repo_branch: str = REPO_BRANCH # os.getenv("REPO_BRANCH", "main")
 
     if connection_arn and repo_owner and repo_name:
         AwsLearningPipelineStack(
